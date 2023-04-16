@@ -29,9 +29,16 @@ import WbSunnyOutlined from "@suid/icons-material/WbSunnyOutlined";
 import DarkModeOutlined from "@suid/icons-material/DarkModeOutlined";
 import SettingsOutlined from "@suid/icons-material/SettingsOutlined";
 import MenuOutlined from "@suid/icons-material/MenuOutlined";
+import KeyboardVoiceOutlined from "@suid/icons-material/KeyboardVoiceOutlined";
+import SearchOutlined from "@suid/icons-material/SearchOutlined";
+import HomeOutlined from "@suid/icons-material/HomeOutlined";
+import List from "@suid/icons-material/List";
+import LanguageOutlined from "@suid/icons-material/LanguageOutlined";
+import TranslateOutlined from "@suid/icons-material/TranslateOutlined";
 
 
-import {toggleTheme, mode} from "../App";
+import {toggleTheme, mode, asideType, setAsideType, toggleAsideType} from "../App";
+import {Aside} from "./Aside";
 
 
 const HeaderAvatar: Component = () => {
@@ -51,13 +58,12 @@ const HeaderAvatar: Component = () => {
                 onClick={(event) => setAnchorEl(event.currentTarget)}
                 size="small"
                 sx={{
-                    ml: 2,
                     boxSizing: "border-box",
-                    p: ".3em",
                     minWidth: 0,
                     borderRadius: "50%",
                     width: "2.3rem",
-                    height: "2.3rem"
+                    height: "2.3rem",
+                    mr: "1rem"
                 }}
                 aria-controls={open() ? "account-menu" : undefined}
                 aria-haspopup="true"
@@ -68,7 +74,7 @@ const HeaderAvatar: Component = () => {
                     src="https://sun9-80.userapi.com/impg/ON8cDnTljNdFI71lCImKGfpCKaRJe0zKPNJn1g/y0vGhRyKCEU.jpg?size=1280x675&quality=96&sign=62be4b049caeac5aacbb66be169af5ed&type=album"
                     sx={{
                         width: "2.3rem",
-                        height: "2.3rem",
+                        height: "2.3rem"
                     }}
                 >
 
@@ -159,28 +165,34 @@ const HeaderNotifications: Component = () => {
         <>
 
 
-            <Badge
-                color="error" badgeContent={5}>
-                <Button
-                    title="Notifications"
-                    onClick={(event) => setAnchorEl(event.currentTarget)}
-                    size="small"
+            <Button
+                title="Notifications"
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+                size="large"
+                sx={{
+                    mr: "1rem",
+
+                    boxSizing: "border-box",
+                    minWidth: 0,
+                    borderRadius: "50%",
+                    width: "2.3rem",
+                    height: "2.3rem",
+                    m: "0.5rem",
+                    p: "0rem"
+                }}
+                aria-controls={open() ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open() ? "true" : undefined}
+            >
+                <Badge
+                    color="error" badgeContent={4}
                     sx={{
-                        ml: 2,
-                        boxSizing: "border-box",
-                        p: ".3em",
-                        minWidth: 0,
-                        borderRadius: "50%",
-                        width: "2.3rem",
-                        height: "2.3rem"
+                        transform: "scale(.8)"
                     }}
-                    aria-controls={open() ? "account-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open() ? "true" : undefined}
                 >
-                    <NotificationsOutlined fontSize="medium"/>
-                </Button>
-            </Badge>
+                    <NotificationsOutlined fontSize="large"/>
+                </Badge>
+            </Button>
             <Menu
                 anchorEl={anchorEl()}
                 id="account-menu"
@@ -243,80 +255,89 @@ const HeaderNotifications: Component = () => {
 };
 
 
-export const Aside: Component = () => {
 
-    return (
-        <aside>
-            a
-        </aside>
-
-    );
-};
 export const Header: Component = () => {
 
-    // onMount(() => {
-    //    const el = document.getElementById("toggleThemeBtn");
-    //    const read = () => {
-    //        console.log("rrrr toggleTheme rrrr")
-    //        toggleTheme()
-    //    };
-    //    el!.addEventListener("click", read);
-    //    // el!.removeEventListener("mousedown", read);
-    //
-    // });
 
     return (
-        <header>
-            <div class="left-components">
-                <Button
-                    title="Notifications"
-                    size="small"
-                    sx={{
-                        ml: 2,
-                        boxSizing: "border-box",
-                        p: ".3em",
-                        minWidth: 0,
-                        borderRadius: "50%",
-                        width: "2.3rem",
-                        height: "2.3rem"
-                    }}
-                >
-                    <MenuOutlined/>
-                </Button>
-                <Avatar
-                    alt="Remy Sharp"
-                    src={logo}
-                    sx={{
-                        width: 44,
-                        height: 44,
-                    }}
-                />
-            </div>
-            <div class="right-components">
+        <>
+            <header>
+                <div class="column">
+                    <Button
+                        title="Aside"
+                        onClick={toggleAsideType}
+                        sx={{
+                            boxSizing: "border-box",
+                            minWidth: 0,
+                            borderRadius: "50%",
+                            width: "2.3rem",
+                            height: "2.3rem",
+                            m: "0rem 0.3rem",
+                            p: "0rem",
 
-                <IconButton
-                    title="Account settings"
-                    onClick={toggleTheme}
-                    sx={{ml: 2}}
-                >
-                    {mode() === "dark" ?
-                        <DarkModeOutlined/> :
-                        <WbSunnyOutlined/>
-                    }
-                </IconButton>
-                <ThemeProvider
-                    themes={myThemes}
-                    default={mode()}
-                    id={"ThemeProvider"}
-                ></ThemeProvider>
+                        }}
+                    >
+                        <MenuOutlined fontSize="medium"
+                                      sx={{
+                                          transform: "scale(1.2)"
+                                      }}
+                        />
+                    </Button>
+                    <Avatar
+                        alt="Avatar"
+                        src={logo}
+                        sx={{
+                            width: "2rem",
+                            height: "2rem",
+                        }}
+                    />
+                </div>
+                <div class="column search">
+                    <div class="search__input">
+                        <input type="text" autocomplete="none" class="search__input-input"/>
 
-                <HeaderNotifications/>
-                <HeaderAvatar/>
+                        <Button
+                            sx={{
+                                m: "0rem",
+                                p: "0rem",
+                                height: "2.3rem",
+                                borderRadius: "0",
+                            }}
+                        >
+                            <SearchOutlined/>
+                        </Button>
+                    </div>
+                    <Button
+                        sx={{
+                            backgroundColor: "var(--stp-background-lighter)",
+                            p: "0rem",
+                            m: "0rem",
+                            height: "2.3rem",
+                            width: "2.3rem",
+                            borderRadius: "50%",
+                            boxSizing: "border-box",
+                            minWidth: "2.3rem"
+                        }}
+                    >
+                        <KeyboardVoiceOutlined
+                            fontSize="medium"
+                            sx={{
+                                transform: "scale(1.1)"
+                            }}
+                        />
+                    </Button>
+                </div>
+                <div class="column">
+                    <HeaderNotifications/>
+                    <HeaderAvatar/>
 
-            </div>
+                </div>
 
 
-        </header>
+            </header>
+            <Aside type={asideType()}/>
+
+        </>
 
     );
 };

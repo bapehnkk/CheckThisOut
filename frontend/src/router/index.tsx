@@ -1,8 +1,8 @@
 import {Route, Routes} from "@solidjs/router";
 import {lazy, Component} from "solid-js";
 
-import HomeScreen from "../screens/Home";
-import TrackScreen from "../screens/Track";
+import {HomeScreen} from "../screens/Home";
+import {TrackScreen} from "../screens/Track";
 
 
 const AppRoutes: Component = (props) => {

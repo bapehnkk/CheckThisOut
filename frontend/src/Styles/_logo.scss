@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+//.logo {
+//    width: 14rem;
+//    max-width: 960px;
+//    height: 3rem;
+//    display: flex;
+//    justify-content: center;
+//    align-items: center;
+//}
+//
+//.logo-text {
+//    font-family: 'Inter', sans-serif;
+//    font-size: 9em;
+//    font-weight: lighter;
+//    letter-spacing: 0.09em;
+//
+//    fill: transparent;
+//    //font-style: italic;
+//
+//    stroke-width: 2;
+//    stroke-dasharray: 1200;
+//    stroke-dashoffset: 1200;
+//    stroke: var(--stp-foreground);
+//
+//}
+//
+.logo {
+    width: 14rem;
+    max-width: 960px;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    margin-left: .3rem;
+}
+
+.logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8.8em;
+    font-weight: bolder;
+    letter-spacing: 0.09em;
+    fill: transparent;
+    //font-style: italic;
+    stroke-width: 2;
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    stroke: var(--stp-foreground);
+}
+
+.animate-logo {
+    animation: strokeLogo 5s forwards, fillLogo 2s 2s forwards;
+}
+
+@keyframes strokeLogo {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+@keyframes fillLogo {
+    0% {
+        fill: transparent;
+    }
+    33% {
+        fill: #BF616A;
+        stroke: #BF616A;
+    }
+    66% {
+        fill: transparent;
+    }
+    100% {
+        fill: (--stp-foreground);
+    }
+}

@@ -1,17 +1,27 @@
-import {Component} from "solid-js";
+import {Component, createSignal, onCleanup} from "solid-js";
 import {Header} from "../components/Header";
 import {Footer} from "../components/Footer";
+import {setAudioSrc, useAudioPlayerStore} from "../context/AudioPlayerContext";
 
 
-export const TrackScreen: Component = () => {
+const TrackScreen: Component = () => {
+    const [audioPlayerStore, setAudioPlayerStore] = useAudioPlayerStore();
+    setAudioSrc(audioPlayerStore.audioSrc);
+
+    onCleanup(() => {
+        // setAudioSrc(null);
+    });
+
+
     return (
         <>
-            <Header/>
-            <Footer/>
+            <div class="container">
+                <h1>Track</h1>
 
-            <h1>Track</h1>
+            </div>
         </>
     );
 };
 
 
+export default TrackScreen;

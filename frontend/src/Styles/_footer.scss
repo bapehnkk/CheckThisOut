@@ -14,45 +14,144 @@ footer {
 
     &.full {
         width: calc(100% - 10rem);
-
     }
 
     &.compact {
         width: calc(100% - 3rem);
+    }
 
+    &.compact, &.full {
         @media (max-width: 800px) {
             width: 100%;
         }
     }
-}
 
-.FooterPlayer {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem;
-}
 
-.right-buttons-controls {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    .FooterPlayer {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
 
-    gap: .5rem;
+        .track-info {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            width: 25%;
 
-    .value-input {
-        display: none;
+            &__image {
+                height: 4rem;
+                width: 4rem;
+                min-width: 4rem;
+                position: relative;
+                overflow: hidden;
+                border-radius: 50%;
+                animation: rotate 30s linear infinite;
+                border: 1px solid var(--stp-background-lighter);
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    opacity: 1;
+                    border-radius: 50%;
+                    background-color: var(--stp-background-light);
+                    height: 1.2rem;
+                    width: 1.2rem;
+                    border: 1.5px solid var(--stp-background);
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+
+                img {
+                    background-size: contain;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                &.pause {
+                    animation-play-state: paused;
+                }
+
+                @keyframes rotate {
+                    from {
+                        transform: rotate(0deg);
+                    }
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+
+            }
+
+
+            &__text {
+                margin-left: 1rem;
+
+
+                h3, p {
+                    white-space: nowrap;
+                    text-overflow: ellipsis; /* добавляем многоточие */
+                    overflow: hidden; /* скрываем все, что не помещается в блоке */
+                    max-width: 12rem;
+                    padding: 0 .3rem;
+                }
+
+                h3 {
+                    font-style: italic;
+                    letter-spacing: -0.09em;
+                    margin-bottom: .3rem;
+                }
+
+                p {
+                    font-size: 0.8rem;
+                    color: var(--stp-foreground-dark);
+                }
+            }
+        }
+
+        .right-buttons-controls {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            width: 25%;
+
+            gap: .5rem;
+
+            .value-input {
+                display: none;
+            }
+
+            .VolumeControlIcon {
+                path {
+                    transform: scale(.4);
+                }
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .track-info {
+                display: none;
+            }
+        }
+        @media (max-width: 600px) {
+            .right-buttons-controls {
+                display: none;
+            }
+        }
+
+        .footer-queue {
+            background-color: #fff !important;
+        }
     }
+
 }
 
-.VolumeControlIcon {
-    path {
-        transform: scale(.4);
-    }
-}
+

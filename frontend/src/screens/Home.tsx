@@ -6,7 +6,22 @@ import {CardOptions} from "../components/Cards"
 import {MasonTracks} from "../components/Tracks"
 import {Footer} from "../components/Footer";
 
-export const HomeScreen: Component = () => {
+
+import {onCleanup} from 'solid-js';
+import {useAudioPlayerStore, setAudioSrc} from '../context/AudioPlayerContext';
+
+
+const HomeScreen: Component = () => {
+    setAudioSrc('Pnevmoslon_-_Po_bumagam_vsjo_pizdato_(musmore.com).mp3');
+
+    onCleanup(() => {
+        // setAudioSrc(null);
+    });
+
+
+    /////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
 
     const newAlbums: CardOptions[] = [
         {
@@ -74,8 +89,6 @@ export const HomeScreen: Component = () => {
 
     return (
         <>
-            <Header/>
-            <Footer/>
             <div class="container">
                 <div class="column start-start w100">
                     <Link href={"#"} class={"anchor-link"}>New Albums</Link>
@@ -91,11 +104,10 @@ export const HomeScreen: Component = () => {
                     <Link href={"#"} class={"anchor-link"}>New tracks</Link>
                     <MasonTracks/>
                 </div>
-
-
             </div>
         </>
     );
 };
 
 
+export default HomeScreen;

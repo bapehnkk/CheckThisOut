@@ -39,6 +39,7 @@ import TranslateOutlined from "@suid/icons-material/TranslateOutlined";
 
 import {toggleTheme, mode, asideType, setAsideType, toggleAsideType} from "../App";
 import {Aside} from "./Aside";
+import Logo from "./Logo";
 
 
 const HeaderAvatar: Component = () => {
@@ -255,7 +256,6 @@ const HeaderNotifications: Component = () => {
 };
 
 
-
 export const Header: Component = () => {
 
 
@@ -283,14 +283,17 @@ export const Header: Component = () => {
                                       }}
                         />
                     </Button>
-                    <Avatar
-                        alt="Avatar"
-                        src={logo}
-                        sx={{
-                            width: "2rem",
-                            height: "2rem",
-                        }}
-                    />
+                    <div class="row">
+                        <Avatar
+                            alt="Avatar"
+                            src={logo}
+                            sx={{
+                                width: "2rem",
+                                height: "2rem",
+                            }}
+                        />
+                        <Logo text={"CheckThisOut"}/>
+                    </div>
                 </div>
                 <div class="column search">
                     <div class="search__input">

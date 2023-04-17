@@ -85,7 +85,7 @@ export const MasonTracks: Component = () => {
 
             return newData;
         });
-        console.log(items())
+        // console.log(items())
     }
 
     function onScroll() {
@@ -95,7 +95,7 @@ export const MasonTracks: Component = () => {
     }
 
     const setMasonWidth = () => {
-        console.log(window.innerWidth);
+        // console.log(window.innerWidth);
 
         if (myMason) {
             if (window.innerWidth > 800) {

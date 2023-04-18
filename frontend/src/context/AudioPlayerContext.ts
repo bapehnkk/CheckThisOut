@@ -30,7 +30,8 @@ export interface QueueOptions {
     musicVolume: number,    // 1>= musicVolume >= 0
     playing: boolean,
     repeat: "no" | "queue" | "track",
-    tracks: QueueTrackOptions[]
+    tracks: QueueTrackOptions[],
+    audio: HTMLAudioElement
 }
 
 
@@ -39,12 +40,13 @@ const [queueStore, setQueueStore] = createStore<QueueOptions>({
     musicVolume: 0.7,
     playing: false,
     repeat: "no",
+    audio: new Audio(),
     tracks: [
         {
             id: 0,
             track: "Scar Tissue",
             group: "Red Hot Chili Peppers",
-            src: "Red Hot Chili Peppers - Scar Tissue.mp3",
+            src: "http://localhost/Red%20Hot%20Chili%20Peppers%20-%20Scar%20Tissue.mp3",
             image: "https://mixdownmag.com.au/wp-content/uploads/2019/05/featured_rhcp.jpg",
             isFavorite: true
         },
@@ -52,7 +54,7 @@ const [queueStore, setQueueStore] = createStore<QueueOptions>({
             id: 1,
             track: "Парень и леший",
             group: "Король и Шут",
-            src: "KiSh_leshij.mp3",
+            src: "http://localhost/KiSh_leshij.mp3",
             image: "https://i.ytimg.com/vi/nZ7utVUZTkQ/maxresdefault.jpg",
             isFavorite: true
         },
@@ -60,7 +62,7 @@ const [queueStore, setQueueStore] = createStore<QueueOptions>({
             id: 2,
             track: "По бумагам всё пиздато",
             group: "ПНЕВМОСЛОН",
-            src: "Pnevmoslon_-_Po_bumagam_vsjo_pizdato_(musmore.com).mp3",
+            src: "http://localhost/Pnevmoslon_-_Po_bumagam_vsjo_pizdato_(musmore.com).mp3",
             image: "https://is2-ssl.mzstatic.com/image/thumb/Music123/v4/db/89/63/db896313-cdde-85b7-4d41-165861946644/859736485656_cover.jpg/1200x1200bf-60.jpg",
             isFavorite: true
         },

@@ -156,37 +156,34 @@ export const MasonTracks: Component = () => {
     );
 };
 
-export const QueueTrack: Component<QueueTrackOptions> = (track) => {
+export const QueueTrack: Component<QueueTrackOptions> = (props) => {
     const [queueStore, setQueueStore] = useQueueStore();
 
     return (
         <>
-            <MenuItem
-                selected={track.id === queueStore.nowPlaying}
+            <div
+                classList={{
+                    "queue-track": true,
+                    "selected": props.id === queueStore.nowPlaying
+                }}
                 onClick={() => {
-                    setQueueStore("nowPlaying", track.id)
+                    setQueueStore("nowPlaying", props.id)
                 }}
             >
                 <div class="row start">
-                    <CardMedia
-                        component="img"
-                        sx={{
-                            width: "2.5rem",
-                            height: "2.5rem",
-                            borderRadius: "50%",
-                            mr: "1rem"
-                        }}
-                        image={track.image}
+                    <img
+
+                        src={props.image}
                         alt="Live from space album cover"
                     />
                     <div class="column start-start">
-                        <div>{track.track}</div>
-                        <div>{track.group}</div>
+                        <div>{props.track}</div>
+                        <div>{props.group}</div>
                     </div>
                 </div>
                 <div class="row">
                 </div>
-            </MenuItem>
+            </div>
         </>
     );
 }

@@ -9,7 +9,7 @@ import {
     Draggable,
     Droppable
 } from "@thisbeyond/solid-dnd";
-import {Component, createSignal, For, JSX} from "solid-js";
+import {Component, createEffect, createSignal, For, JSX} from "solid-js";
 import {DragEventHandler} from "@thisbeyond/solid-dnd"
 import {CardMedia, MenuItem} from "@suid/material";
 import {useQueueStore, QueueTrackOptions, getTrackIds, getTrackById} from "../context/AudioPlayerContext";
@@ -26,17 +26,19 @@ interface SortableOptions {
     track: QueueTrackOptions
 }
 
+
 const Sortable: Component<SortableOptions> = (props) => {
     const sortable = createSortable(props.index as string | number);
     const [state] = useDragDropContext();
+
 
     return (
         <div
             use:sortable
             class="sortable"
             classList={{
-                "opacity-25": sortable.isActiveDraggable,
-                "transition-transform": !!state.active.draggable,
+                // "opacity-25": sortable.isActiveDraggable,
+                // "transition-transform": !!state.active.draggable,
             }}
         >
             <QueueTrack {...props.track}/>
@@ -50,6 +52,11 @@ export const SortableVerticalListExample: Component = () => {
     const [activeItem, setActiveItem] = createSignal<number | null>(null);
     const ids = () => items();
     const onDragStart: DragEventHandler = ({draggable}) => setActiveItem(draggable.id);
+
+    createEffect(()=>{
+        queueStore.tracks
+        setItems(getTrackIds())
+    });
 
 
     const onDragEnd: DragEventHandler = ({draggable, droppable}) => {
@@ -92,25 +99,23 @@ export const SortableVerticalListExample: Component = () => {
             <DragDropSensors/>
             <div class="column self-stretch">
                 <SortableProvider ids={ids()}>
-                    <For each={items()}>{(item) =>
-                        <Sortable track={getTrackById(item)!} index={item}/>}
+
+                    <For each={items()}>
+                        {(item) => <Sortable track={getTrackById(item)!} index={item}/>}
                     </For>
                 </SortableProvider>
             </div>
-            <DragOverlay>
-                <div class="sortable">
-                    {activeItem()}
+            <DragOverlay
+                class={"sortable top"}>
+                {/*{activeItem()}*/}
 
-                    {() => {
-                        const track = getTrackById(activeItem()!);
-                        // console.log(track)
-                        return (
-                            <QueueTrack {...track}/>
-                        );
-                    }}
-                </div>
-
-
+                {() => {
+                    const track = getTrackById(activeItem()!)!;
+                    // console.log(track)
+                    return (
+                        <QueueTrack {...track}/>
+                    );
+                }}
             </DragOverlay>
         </DragDropProvider>
     );

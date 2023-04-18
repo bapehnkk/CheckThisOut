@@ -46,6 +46,7 @@ import EventRepeatOutlined from "@suid/icons-material/EventRepeatOutlined";
 import OpenInNewOutlined from "@suid/icons-material/OpenInNewOutlined";
 import MoreHoriz from "@suid/icons-material/MoreHoriz";
 import {QueueTrack} from "./Tracks";
+import {SortableVerticalListExample} from "./SortableList";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,12 +67,15 @@ const formatTime = (seconds: number): string => {
 };
 
 export const AudioPlayer: Component = () => {
-    const Song = new Audio();
-    const setSongSrc = (src: string) => {
-        Song.src = src
+    const updateTrack = () => {
+        const nowPlaying = queueStore.audio.src;
+        const trackInQueue = queueStore.tracks.at(queueStore.nowPlaying)!.src
+        if (nowPlaying != trackInQueue) {
+            queueStore.audio.src = trackInQueue;
+        }
     };
 
-    const [audio] = createSignal(Song);
+    const [audio] = createSignal(queueStore.audio);
 
     const [duration, setDuration] = createSignal(0);
     const [currentTime, setCurrentTime] = createSignal(0);
@@ -162,7 +166,7 @@ export const AudioPlayer: Component = () => {
         });
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.code === 'Space') {
-    event.preventDefault();
+                event.preventDefault();
                 togglePlayPause();
             }
         };
@@ -205,10 +209,10 @@ export const AudioPlayer: Component = () => {
     });
 
     onMount(() => {
-        setSongSrc(queueStore.tracks.at(queueStore.nowPlaying)!.src);
 
+        updateTrack();
         createEffect(() => {
-            setSongSrc(queueStore.tracks.at(queueStore.nowPlaying)!.src);
+            updateTrack();
         });
     })
 
@@ -264,7 +268,8 @@ export const AudioPlayer: Component = () => {
                         onClick={toggleRepeatType}
                     >
                         {queueStore.repeat === "track" ? <RepeatOneOutlined/> :
-                            queueStore.repeat === "queue" ? <RepeatOutlined/> : <RepeatOutlined sx={{color: "var(--stp-foreground-dark-alpha_secondary)"}}/>
+                            queueStore.repeat === "queue" ? <RepeatOutlined/> :
+                                <RepeatOutlined sx={{color: "var(--stp-foreground-dark-alpha_secondary)"}}/>
                         }
 
                     </IconButton>
@@ -359,7 +364,7 @@ const FooterQueue: Component = () => {
                         backgroundColor: "var(--stp-background-light)",
                         maxHeight: 48 * 6.5,
                         filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                        width: "40ch"
+                        width: "20rem"
                     },
                 }}
                 transformOrigin={{
@@ -399,9 +404,11 @@ const FooterQueue: Component = () => {
                     </Toolbar>
                 </MenuItem>
                 <Divider/>
-                {queueStore.tracks.map((track) => (
-                    <QueueTrack {...track}/>
-                ))}
+                {/*{queueStore.tracks.map((track) => (*/}
+                {/*    <QueueTrack {...track}/>*/}
+                {/*))}*/}
+                {/*<Divider/>*/}
+                <SortableVerticalListExample/>
             </Menu>
         </>
     );

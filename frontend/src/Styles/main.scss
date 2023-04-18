@@ -212,6 +212,7 @@ swiper-container {
     margin: auto;
     width: 100%;
 }
+
 .mason {
     box-sizing: border-box;
     margin: auto;
@@ -228,11 +229,23 @@ swiper-container {
     }
 }
 
-    .no-animation {
-        transition: none !important;
+.no-animation {
+    transition: none !important;
 
     * {
         transition: none !important;
 
     }
+}
+
+.sortable {
+    background-color: #BF616A;
+    padding: 1rem;
+    margin-bottom: .3rem;
+    width: 20rem;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 }

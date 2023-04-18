@@ -45,6 +45,7 @@ import EventRepeatOutlined from "@suid/icons-material/EventRepeatOutlined";
 
 import OpenInNewOutlined from "@suid/icons-material/OpenInNewOutlined";
 import MoreHoriz from "@suid/icons-material/MoreHoriz";
+import {QueueTrack} from "./Tracks";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,9 +83,9 @@ export const AudioPlayer: Component = () => {
         } else {
             audio().play();
         }
-        setQueueStore({
-            playing: !queueStore.playing
-        })
+        setQueueStore(
+            "playing", !queueStore.playing
+        )
     };
 
     const setVolume = (volume: number) => {
@@ -123,15 +124,15 @@ export const AudioPlayer: Component = () => {
     };
 
     const prevTrack = () => {
-        setQueueStore({
-            nowPlaying: queueStore.nowPlaying === 0 ? queueStore.tracks.length - 1 : queueStore.nowPlaying - 1
-        });
+        setQueueStore(
+            "nowPlaying", queueStore.nowPlaying === 0 ? queueStore.tracks.length - 1 : queueStore.nowPlaying - 1
+        );
     };
 
     const nextTrack = () => {
-        setQueueStore({
-            nowPlaying: queueStore.nowPlaying === queueStore.tracks.length - 1 ? 0 : queueStore.nowPlaying + 1
-        });
+        setQueueStore(
+            "nowPlaying", queueStore.nowPlaying === queueStore.tracks.length - 1 ? 0 : queueStore.nowPlaying + 1
+        );
     };
 
     createEffect(() => {
@@ -143,14 +144,6 @@ export const AudioPlayer: Component = () => {
             setCurrentTime(audio().currentTime);
         });
         audio().addEventListener('ended', () => {
-            console.log('end');
-            // if (queueStore.repeat === "track") {
-            //     audio().play();
-            // } else if (queueStore.repeat === "queue") {
-            //     nextTrack();
-            // } else if (queueStore.repeat === "no" && queueStore.nowPlaying !== queueStore.tracks.length - 1) {
-            //     nextTrack();
-            // }
             switch (queueStore.repeat) {
                 case "track":
                     audio().play();
@@ -162,16 +155,25 @@ export const AudioPlayer: Component = () => {
                     if (queueStore.nowPlaying !== queueStore.tracks.length - 1) {
                         nextTrack();
                     } else {
-                        setQueueStore({playing: false});
+                        setQueueStore("playing", false);
                     }
                     break;
             }
-
         });
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.code === 'Space') {
+    event.preventDefault();
+                togglePlayPause();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
 
 
         return onCleanup(() => {
             audio().pause();
+            document.removeEventListener('keydown', handleKeyDown);
+
         });
     });
 
@@ -262,7 +264,7 @@ export const AudioPlayer: Component = () => {
                         onClick={toggleRepeatType}
                     >
                         {queueStore.repeat === "track" ? <RepeatOneOutlined/> :
-                            queueStore.repeat === "queue" ? <RepeatOutlined/> : <RepeatOutlined/>
+                            queueStore.repeat === "queue" ? <RepeatOutlined/> : <RepeatOutlined sx={{color: "var(--stp-foreground-dark-alpha_secondary)"}}/>
                         }
 
                     </IconButton>
@@ -382,9 +384,9 @@ const FooterQueue: Component = () => {
                         <IconButton
                             title={"Play/Stop"}
                             onClick={() => {
-                                setQueueStore({
-                                    playing: !queueStore.playing
-                                })
+                                setQueueStore(
+                                    "playing", !queueStore.playing
+                                )
                             }}
                             size={"small"}
                         >
@@ -398,33 +400,7 @@ const FooterQueue: Component = () => {
                 </MenuItem>
                 <Divider/>
                 {queueStore.tracks.map((track) => (
-                    <MenuItem
-                        selected={track.id === queueStore.nowPlaying}
-                        onClick={() => {
-                            setQueueStore({nowPlaying: track.id})
-                        }}
-                    >
-                        <div class="row start">
-                            <CardMedia
-                                component="img"
-                                sx={{
-                                    width: "2.5rem",
-                                    height: "2.5rem",
-                                    borderRadius: "50%",
-                                    mr: "1rem"
-                                }}
-                                image={track.image}
-                                alt="Live from space album cover"
-                            />
-                            <div class="column start-start">
-                                <div>{track.track}</div>
-                                <div>{track.group}</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                        </div>
-                    </MenuItem>
-
+                    <QueueTrack {...track}/>
                 ))}
             </Menu>
         </>

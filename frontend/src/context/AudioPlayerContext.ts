@@ -88,23 +88,31 @@ export function editTrackById(id: number, updatedTrack: Partial<QueueTrackOption
 export const toggleRepeatType = () => {
     switch (queueStore.repeat) {
         case "track":
-            setQueueStore({repeat: "no"})
+            setQueueStore("repeat", "no")
             break;
         case "queue":
-            setQueueStore({repeat: "track"})
+            setQueueStore("repeat", "track")
             break;
         case "no":
-            setQueueStore({repeat: "queue"})
+            setQueueStore("repeat", "queue")
             break;
     }
 };
 
 export const shuffleTracks = () => {
-  const shuffledTracks = [...queueStore.tracks].sort(() => Math.random() - 0.5);
+    const shuffledTracks = [...queueStore.tracks].sort(() => Math.random() - 0.5);
 
-  const updatedTracks = shuffledTracks.map((track, index) => {
-    return { ...track, id: index };
-  });
+    const updatedTracks = shuffledTracks.map((track, index) => {
+        return {...track, id: index};
+    });
 
-  setQueueStore('tracks', updatedTracks);
+    setQueueStore('tracks', updatedTracks);
+    setQueueStore('nowPlaying', 0);
+};
+export const getTrackIds = (): number[] => {
+    return queueStore.tracks.map(track => track.id);
+};
+export const getTrackById = (id: number): QueueTrackOptions | undefined => {
+    // return queueStore.tracks.find(track => track.id === id);
+    return queueStore.tracks.at(id);
 };

@@ -5,6 +5,8 @@ import PlayArrowOutlined from "@suid/icons-material/PlayArrowOutlined";
 import {FitText} from "./FitText";
 import {CardOptions, MasonCard} from "./Cards";
 import {fontSizeInPixels} from "../App";
+import {QueueTrackOptions, useQueueStore,} from "../context/AudioPlayerContext";
+import {CardMedia, MenuItem} from "@suid/material";
 
 export interface MasonCardOptions {
     id: number;
@@ -153,3 +155,38 @@ export const MasonTracks: Component = () => {
         </div>
     );
 };
+
+export const QueueTrack: Component<QueueTrackOptions> = (track) => {
+    const [queueStore, setQueueStore] = useQueueStore();
+
+    return (
+        <>
+            <MenuItem
+                selected={track.id === queueStore.nowPlaying}
+                onClick={() => {
+                    setQueueStore("nowPlaying", track.id)
+                }}
+            >
+                <div class="row start">
+                    <CardMedia
+                        component="img"
+                        sx={{
+                            width: "2.5rem",
+                            height: "2.5rem",
+                            borderRadius: "50%",
+                            mr: "1rem"
+                        }}
+                        image={track.image}
+                        alt="Live from space album cover"
+                    />
+                    <div class="column start-start">
+                        <div>{track.track}</div>
+                        <div>{track.group}</div>
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+            </MenuItem>
+        </>
+    );
+}

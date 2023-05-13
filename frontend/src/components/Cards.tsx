@@ -3,8 +3,9 @@ import {Link} from "@solidjs/router";
 import PlayArrowOutlined from "@suid/icons-material/PlayArrowOutlined";
 import {FitText} from "./FitText";
 import {MasonCardOptions} from "./Tracks";
-import {addTrackToQueueStore} from "../context/AudioPlayerContext";
+import {addTrackToQueueStore} from "../store/AudioPlayer";
 import toast from "solid-toast";
+import RedButton from "./Buttons";
 
 
 export interface CardOptions {
@@ -50,9 +51,7 @@ const SlideChildren: Component<CardOptions> = (props) => {
             <img src={props.image} loading="lazy"/>
 
             <Link href={props.url} class="content" onclick={addTrack}>
-                <div class="content-btn">
-                    <PlayArrowOutlined fontSize={"large"}/>
-                </div>
+                <RedButton/>
 
                 <div class="content-description">
                     <FitText text={props.title} class="content-description__title"/>

@@ -19,6 +19,7 @@ import {
 import logo from '../assets/logo.png';
 import {createEffect, createSignal, onMount} from "solid-js";
 import RedButton from "./Buttons";
+import {Link} from "@solidjs/router";
 
 
 import Logout from "@suid/icons-material/Logout";
@@ -40,6 +41,10 @@ import TranslateOutlined from "@suid/icons-material/TranslateOutlined";
 import {toggleTheme, mode, asideType, setAsideType, toggleAsideType} from "../App";
 import {Aside} from "./Aside";
 import Logo from "./Logo";
+
+
+import {handleLogout } from "../auth";
+import { useAuthStore } from "../store/auth";
 
 
 const HeaderAvatar: Component = () => {
@@ -141,7 +146,9 @@ const HeaderAvatar: Component = () => {
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem>
+                <MenuItem
+                    onClick={handleLogout}
+                >
                     <ListItemIcon>
                         <Logout fontSize="small"/>
                     </ListItemIcon>
@@ -257,7 +264,8 @@ const HeaderNotifications: Component = () => {
 
 
 export const Header: Component = () => {
-
+    
+    const [authState, _] = useAuthStore();
 
     return (
         <>
@@ -284,14 +292,17 @@ export const Header: Component = () => {
                         />
                     </Button>
                     <div class="row">
-                        <Avatar
-                            alt="Avatar"
-                            src={logo}
-                            sx={{
-                                width: "2rem",
-                                height: "2rem",
-                            }}
-                        />
+                        <Link href={"/"}>
+
+                            <Avatar
+                                alt="Avatar"
+                                src={logo}
+                                sx={{
+                                    width: "2rem",
+                                    height: "2rem",
+                                }}
+                            />
+                        </Link>
                         <Logo text={"CheckThisOut"}/>
                     </div>
                 </div>
@@ -331,8 +342,20 @@ export const Header: Component = () => {
                     </Button>
                 </div>
                 <div class="column">
-                    <HeaderNotifications/>
-                    <HeaderAvatar/>
+                    {authState.isAuthenticated ? 
+                        <>
+                            <HeaderNotifications/>
+                            <HeaderAvatar/>
+                        </> :
+                        <>
+                            <Link href="/login">
+                                <Button >Log In</Button>
+                            </Link>
+                            <Link href="/register">
+                                <Button variant="outlined" sx={{mr: "1rem"}} color="error"> Sign Up</Button>
+                            </Link>
+                        </>
+                    }
 
                 </div>
 

@@ -1,6 +1,8 @@
 .audio-progress {
-    width: 45%;
+    width: 50%;
     position: relative;
+    background-color: var(--stp-background-light);
+    padding: 0 1rem;
 
     @media (max-width: 1200px) {
         flex-grow: 1;
@@ -9,7 +11,6 @@
     @media (max-width: 600px) {
         margin-right: 0;
     }
-
 
     &__progress {
         display: flex;
@@ -46,6 +47,15 @@
             border-radius: 1rem;
             transform: translateX(-.1rem);
         }
+
+        &-preload {
+            position: absolute;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 1rem;
+            background-color: rgba(154, 156, 163, 0.5);
+        }
     }
 
     &__controls-btns {
@@ -54,5 +64,93 @@
         justify-content: space-between;
         align-items: center;
         transform: translateY(-0.2rem);
+    }
+}
+
+.player-queue {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    &__link {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: 2rem;
+    }
+
+}
+
+.full-page-player {
+
+}
+
+.nextOrPrev-track-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    height: 40%;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all .3s ease;
+        user-select: none;
+
+    &__bgc {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover !important;
+        background-position: center !important;
+        border-radius: 1rem;
+        filter: blur(1px);
+        transition: all .3s ease;
+    }
+
+    svg {
+        position: absolute;
+        transition: all .2s ease;
+        width: 120% !important;
+        height: 120% !important;
+        fill: rgba(236, 239, 244, 0.5);
+    }
+
+    &__description {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        gap: 1rem;
+        width: 100%;
+        height: 100%;
+        word-break: break-word;
+        transition: all .3s ease;
+        opacity: 0;
+    }
+
+    &:hover {
+        svg {
+            fill: rgba(236, 239, 244, 0);
+        }
+
+        .nextOrPrev-track-button__bgc {
+            filter: blur(0);
+        }
+
+        .nextOrPrev-track-button__description {
+            opacity: 1;
+        }
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+        display: none;
     }
 }

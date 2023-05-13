@@ -20,7 +20,7 @@ import BookmarksOutlined from "@suid/icons-material/BookmarksOutlined";
 import QueueMusicOutlined from "@suid/icons-material/QueueMusicOutlined";
 
 interface AsideOptions {
-    type: "full" | "compact"
+    type: "full" | "compact" | "none"
 }
 
 interface AsideLinkOptions extends AsideOptions {
@@ -80,7 +80,7 @@ export const Aside: Component<AsideOptions> = (props) => {
         >
             <div class="column">
                 <AsideLink type={props.type} icon={HomeOutlined} description={"Home"} link={"/"}/>
-                <AsideLink type={props.type} icon={List} description={"Categories"} link={"/track"}/>
+                <AsideLink type={props.type} icon={List} description={"Categories"} link={"/tracks"}/>
                 <AsideLink type={props.type} icon={LanguageOutlined} description={"Events"} link={"#"}/>
             </div>
 

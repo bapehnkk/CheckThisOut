@@ -5,7 +5,7 @@ import PlayArrowOutlined from "@suid/icons-material/PlayArrowOutlined";
 import {FitText} from "./FitText";
 import {CardOptions, MasonCard} from "./Cards";
 import {fontSizeInPixels} from "../App";
-import {QueueTrackOptions, useQueueStore,} from "../context/AudioPlayerContext";
+import {QueueTrackOptions, useQueueStore,} from "../store/AudioPlayer";
 import {CardMedia, MenuItem} from "@suid/material";
 
 export interface MasonCardOptions {
@@ -173,12 +173,22 @@ export const QueueTrack: Component<QueueTrackOptions> = (props) => {
                 <div class="row start">
                     <img
 
-                        src={props.image}
+                        src={props.images[0]!.image_file}
                         alt="Live from space album cover"
                     />
                     <div class="column start-start">
-                        <div>{props.track}</div>
-                        <div>{props.group}</div>
+                        <Link href={`/track/${props.uuid}`}>{props.title}</Link>
+                        <div class="row start track-info__text-authors">
+                            {props.bands.map((band, index, bandsArray) => (
+                                <Link
+                                    title={band.title}
+                                    href={`/band/${band.id}`}
+                                >
+                                    {band.title}{index < bandsArray.length - 1 ? ', ' : ''}
+
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <div class="row">

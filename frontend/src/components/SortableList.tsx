@@ -12,7 +12,7 @@ import {
 import {Component, createEffect, createSignal, For, JSX} from "solid-js";
 import {DragEventHandler} from "@thisbeyond/solid-dnd"
 import {CardMedia, MenuItem} from "@suid/material";
-import {useQueueStore, QueueTrackOptions, getTrackIds, getTrackById} from "../context/AudioPlayerContext";
+import {useQueueStore, QueueTrackOptions, getTrackIds, getTrackById} from "../store/AudioPlayer";
 import {QueueTrack} from "./Tracks";
 
 
@@ -53,7 +53,7 @@ export const SortableVerticalListExample: Component = () => {
     const ids = () => items();
     const onDragStart: DragEventHandler = ({draggable}) => setActiveItem(draggable.id);
 
-    createEffect(()=>{
+    createEffect(() => {
         queueStore.tracks
         setItems(getTrackIds())
     });
@@ -98,8 +98,8 @@ export const SortableVerticalListExample: Component = () => {
         >
             <DragDropSensors/>
             <div class="column self-stretch">
-                <SortableProvider ids={ids()}>
 
+                <SortableProvider ids={ids()}>
                     <For each={items()}>
                         {(item) => <Sortable track={getTrackById(item)!} index={item}/>}
                     </For>
@@ -108,7 +108,6 @@ export const SortableVerticalListExample: Component = () => {
             <DragOverlay
                 class={"sortable top"}>
                 {/*{activeItem()}*/}
-
                 {() => {
                     const track = getTrackById(activeItem()!)!;
                     // console.log(track)

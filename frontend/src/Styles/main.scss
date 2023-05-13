@@ -1,6 +1,6 @@
 :root {
     --stp-red: #BF616A;
-    --root-padding: 4rem;
+    --root-padding: 3rem;
 }
 
 * {
@@ -61,7 +61,7 @@ html.noscroll body {
 }
 
 #root {
-    padding-top: 3.5rem;
+    padding-top: 3rem;
     padding-left: var(--root-padding);
     transition: all .3s ease;
 }
@@ -158,6 +158,7 @@ a {
 @import '_cards';
 @import '_player';
 @import '_logo';
+@import '_form';
 
 [data-fit-text] {
     --width: 100vw;
@@ -266,8 +267,98 @@ swiper-container {
         width: 3rem;
         height: 3rem;
     }
-    &.selected {
-    background-color: var(--stp-background-lighter);
 
+    &.selected {
+        background-color: var(--stp-background-lighter);
+
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
+
+.preview-container {
+    max-height: 80vh;
+    background: linear-gradient(0deg, rgba(59, 66, 82, 0.9), rgba(59, 66, 82, 0.9));
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 3%;
+    flex-wrap: wrap;
+
+    &__about {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2rem;
+        flex-wrap: wrap;
+
+        width: max-content;
+        position: relative;
+    }
+
+
+
+    .album {
+        border-radius: 1rem;
+        width: 30rem;
+        background-color: #fff;
+    }
+}
+
+  .visualizer {
+        height: 60vh;
+        width: 25rem;
+        max-width: 100%;
+        position: relative;
+        overflow: hidden;
+
+        #out {
+            height: 100%;
+            width: 25rem;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    }
+
+
+.marquee {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    container-type: inline-size;
+
+    & > * {
+        -webkit-animation: marquee 20s linear infinite both alternate;
+        animation: marquee 20s linear infinite both alternate;
+        animation-play-state: paused;
+
+        &:hover {
+            animation-play-state: running;
+        }
+    }
+}
+
+
+@-webkit-keyframes marquee {
+    to {
+        transform: translateX(min(100cqw - 100%, 0px));
+    }
+}
+
+@keyframes marquee {
+    to {
+        transform: translateX(min(100cqw - 100%, 0px));
     }
 }

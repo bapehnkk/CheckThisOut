@@ -11,11 +11,12 @@ import AppRoutes from "./router";
 
 export const [mode, setMode] = createSignal<"dark" | "light">("dark");
 import {Mason, createMasonryBreakpoints} from 'solid-mason';
-import {useAudioPlayerStore} from "./context/AudioPlayerContext";
+import {useAudioPlayerStore, useQueueStore} from "./store/AudioPlayer";
 import {AudioPlayer} from "./components/Player";
 import {Footer} from "./components/Footer";
 import {Header} from "./components/Header";
 import toast, {Toaster} from 'solid-toast';
+import {useHeaderSignal} from "./store/auth";
 
 
 export const toggleTheme = () => {
@@ -29,11 +30,16 @@ interface GetThemeAppOptions {
     mode: "dark" | "light" | undefined
 }
 
-export const [asideType, setAsideType] = createSignal<"full" | "compact">("compact");
+export const [asideType, setAsideType] = createSignal<"full" | "compact" | "none">("compact");
 export const toggleAsideType = () => {
-    asideType() === "full" ? setAsideType("compact") : setAsideType("full");
+    asideType() === "compact" ? setAsideType("full") : setAsideType("compact");
     const root = document.documentElement;
-    root.style.setProperty('--root-padding', asideType() === "full" ? "11rem" : "4rem");
+    root.style.setProperty('--root-padding', asideType() === "full" ? "10rem" : "3rem");
+};
+export const hideAside = () => {
+    setAsideType("none");
+    const root = document.documentElement;
+    root.style.setProperty('--root-padding', "0rem");
 };
 export const fontSizeInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -105,33 +111,28 @@ const App: Component = () => {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const [audioPlayerStore] = useAudioPlayerStore();
+    const [queueStore] = useQueueStore();
 
-    createEffect(() => {
-        if (audioPlayerStore.audioSrc) {
-            // Ваш код для управления аудиоплеером при переключении между страницами
-        }
-    });
+
+
+    const [headerShow] = useHeaderSignal();
 
     return (
         <>
-            <GetThemeApp
-                mode={mode()}
-            >
-                <Toaster/>
-            </GetThemeApp>
-            {audioPlayerStore.audioSrc &&
-                <GetThemeApp
-                    mode={mode()}
-                >
-                    <Footer/>
-                </GetThemeApp>
-            }
+
             <Router>
                 <GetThemeApp
                     mode={mode()}
                 >
-                    <Header/>
+                    <Toaster/>
+                    {headerShow() &&
+                        <>
+                            <Header/>
+                            {queueStore.tracks.length !== 0 &&
+                                <Footer/>
+                            }
+                        </>
+                    }
                 </GetThemeApp>
                 <Transition
                     onBeforeEnter={(el: any) => (el.style.opacity = 0)}

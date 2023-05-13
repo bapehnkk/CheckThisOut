@@ -1,4 +1,6 @@
 import {createStore} from 'solid-js/store';
+import axios from "axios";
+import {onMount} from "solid-js";
 
 interface AudioPlayerState {
     audioSrc: string | null;
@@ -17,13 +19,75 @@ export function setAudioSrc(src: string | null) {
 }
 
 export interface QueueTrackOptions {
-    id: number,
-    track: string,
-    group: string,
-    image: string,
-    src: string,
-    isFavorite: boolean
+    id: number;
+    uuid: string;
+    title: string;
+    description: string;
+    music_file: string;
+    liner_notes: string;
+    release_date: string;
+    update_date: string;
+    user: {
+        id: number;
+        email: string;
+        username: string;
+        full_name: string;
+        phone: string;
+        image: string | null;
+        language: string;
+    };
+    album: {
+        id: number;
+        album_type: string;
+        title: string;
+        description: string;
+        critical_receptions: string;
+        record_label: string;
+        liner_notes: string;
+        release_date: string;
+        update_date: string;
+        tracks: string[];
+        credentials: any[];
+        comments: any[];
+    };
+    tags: {
+        id: number;
+        title: string;
+        user: number;
+    }[];
+    musicians: {
+        id: number;
+        email: string;
+        username: string;
+        full_name: string;
+        phone: string;
+        image: string | null;
+        language: string;
+    }[];
+    bands: {
+        id: number;
+        title: string;
+        description: string;
+        musicians: number[];
+        images: number[];
+    }[];
+    images: {
+        id: number;
+        title: string;
+        image_file: string;
+        user: number;
+    }[];
+    comments: any[];
 }
+
+// export interface QueueTrackOptions {
+//     id: number,
+//     track: string,
+//     group: string,
+//     image: string,
+//     src: string,
+//     isFavorite: boolean
+// }
 
 export interface QueueOptions {
     nowPlaying: number,
@@ -31,7 +95,8 @@ export interface QueueOptions {
     playing: boolean,
     repeat: "no" | "queue" | "track",
     tracks: QueueTrackOptions[],
-    audio: HTMLAudioElement
+    audio: HTMLAudioElement,
+    audioTime: number
 }
 
 
@@ -41,32 +106,21 @@ const [queueStore, setQueueStore] = createStore<QueueOptions>({
     playing: false,
     repeat: "no",
     audio: new Audio(),
-    tracks: [
-        {
-            id: 0,
-            track: "Scar Tissue",
-            group: "Red Hot Chili Peppers",
-            src: "http://localhost/Red%20Hot%20Chili%20Peppers%20-%20Scar%20Tissue.mp3",
-            image: "https://mixdownmag.com.au/wp-content/uploads/2019/05/featured_rhcp.jpg",
-            isFavorite: true
-        },
-        {
-            id: 1,
-            track: "Парень и леший",
-            group: "Король и Шут",
-            src: "http://localhost/KiSh_leshij.mp3",
-            image: "https://i.ytimg.com/vi/nZ7utVUZTkQ/maxresdefault.jpg",
-            isFavorite: true
-        },
-        {
-            id: 2,
-            track: "По бумагам всё пиздато",
-            group: "ПНЕВМОСЛОН",
-            src: "http://localhost/Pnevmoslon_-_Po_bumagam_vsjo_pizdato_(musmore.com).mp3",
-            image: "https://is2-ssl.mzstatic.com/image/thumb/Music123/v4/db/89/63/db896313-cdde-85b7-4d41-165861946644/859736485656_cover.jpg/1200x1200bf-60.jpg",
-            isFavorite: true
-        },
-    ]
+    tracks: [],
+    audioTime: 0
+});
+const fetchTracks = async () => {
+    try {
+        const response = await axios.get('http://localhost:8000/api/tracks/');
+        setQueueStore("tracks", response.data)
+    } catch (error) {
+        console.error('Error fetching tracks:', error);
+    }
+};
+onMount(async () => {
+    queueStore.audio.preload = "metadata";
+    await fetchTracks();
+    console.log(queueStore)
 });
 
 export function useQueueStore() {
@@ -118,3 +172,4 @@ export const getTrackById = (id: number): QueueTrackOptions | undefined => {
     // return queueStore.tracks.find(track => track.id === id);
     return queueStore.tracks.at(id);
 };
+

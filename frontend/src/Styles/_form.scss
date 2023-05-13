@@ -1,0 +1,18 @@
+.form {
+    margin: auto;
+
+    max-width: 30rem;
+    width: 60%;
+
+    @media (max-width: 500px) {
+        width: 90%;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 2rem;
+    }
+
+    padding-bottom: 2rem;
+}

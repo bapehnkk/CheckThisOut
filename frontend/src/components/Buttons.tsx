@@ -1,8 +1,8 @@
 import {Button} from "@suid/material";
 import {red} from "@suid/material/colors";
 import {createTheme, ThemeProvider} from "@suid/material/styles";
-import {ParentComponent} from "solid-js";
-
+import {Component} from "solid-js";
+import PlayArrowOutlined from "@suid/icons-material/PlayArrowOutlined";
 
 
 const theme = createTheme({
@@ -17,21 +17,13 @@ const theme = createTheme({
         },
     },
 });
-interface ButtonOptions {
-    variant?: "text" | "outlined" | "contained",
 
-    onClick?: any,
-}
 
-const RedButton: ParentComponent<ButtonOptions> = (props) => {
+const RedButton: Component = () => {
     return (
-        <ThemeProvider theme={theme}>
-            <Button
-                onClick={props.onClick}
-                variant={props.variant}
-                class="round-btn"
-            >{props.children}</Button>
-        </ThemeProvider>
+        <div class="content-btn">
+            <PlayArrowOutlined fontSize={"large"}/>
+        </div>
     );
 };
 

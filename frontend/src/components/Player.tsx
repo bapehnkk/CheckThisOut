@@ -1,5 +1,17 @@
 import {Component, createSignal, onMount, onCleanup, createEffect, createMemo} from "solid-js";
-import {Badge, Button, CardMedia, Divider, IconButton, Menu, MenuItem, Toolbar, Typography} from "@suid/material";
+import {
+    Badge, Box,
+    Button,
+    CardMedia,
+    Divider,
+    IconButton,
+    Menu,
+    MenuItem,
+    Modal,
+    Toolbar,
+    Typography,
+    Stack
+} from "@suid/material";
 import {
     Arc,
     ContinuousRange,
@@ -22,7 +34,7 @@ import {
     useQueueStore,
     editTrackById,
     toggleRepeatType, shuffleTracks
-} from "../context/AudioPlayerContext";
+} from "../store/AudioPlayer";
 
 
 import FavoriteBorderOutlined from "@suid/icons-material/FavoriteBorderOutlined";
@@ -42,11 +54,23 @@ import SkipNextOutlined from "@suid/icons-material/SkipNextOutlined";
 import RepeatOutlined from "@suid/icons-material/RepeatOutlined";
 import RepeatOneOutlined from "@suid/icons-material/RepeatOneOutlined";
 import EventRepeatOutlined from "@suid/icons-material/EventRepeatOutlined";
+import Close from "@suid/icons-material/Close";
+import KeyboardArrowLeft from "@suid/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@suid/icons-material/KeyboardArrowRight";
 
 import OpenInNewOutlined from "@suid/icons-material/OpenInNewOutlined";
 import MoreHoriz from "@suid/icons-material/MoreHoriz";
 import {QueueTrack} from "./Tracks";
 import {SortableVerticalListExample} from "./SortableList";
+import {Link} from "@solidjs/router";
+import Visualizer from "./Visualizer";
+
+import {
+    useKeyDownList,
+    createKeyHold,
+    createShortcut, useKeyDownEvent,
+} from '@solid-primitives/keyboard'
+import {FitText} from "./FitText";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +79,63 @@ const [musicVolume, setMusicVolume] = createSignal(0.7);
 
 const [audioPlayerStore, setAudioPlayerStore] = useAudioPlayerStore();
 const [queueStore, setQueueStore] = useQueueStore();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+interface NextTrackInPlayer {
+    prevOrNext: "prev" | "next",
+    onClick: any
+}
+
+export const NextTrackInPlayer: Component<NextTrackInPlayer> = (props) => {
+    const [track, setTrack] = createSignal<QueueTrackOptions>();
+
+
+    createEffect(() => {
+        if (props.prevOrNext === "prev") {
+            if (queueStore.nowPlaying - 1 < 0) {
+                setTrack(queueStore.tracks.at(queueStore.tracks.length - 1))
+            } else {
+                setTrack(queueStore.tracks.at(queueStore.nowPlaying - 1))
+            }
+        } else if (props.prevOrNext === "next") {
+            if (queueStore.nowPlaying + 1 > queueStore.tracks.length - 1) {
+                setTrack(queueStore.tracks.at(0))
+            } else {
+                setTrack(queueStore.tracks.at(queueStore.nowPlaying + 1))
+            }
+        }
+    });
+
+    return (
+        <div
+            class={"nextOrPrev-track-button"}
+            onClick={props.onClick}
+        >
+            <div
+                class={"nextOrPrev-track-button__bgc"}
+                style={`background: linear-gradient(0deg, rgba(59, 66, 82, 0.9), rgba(59, 66, 82, 0.9)), url(${track()?.images[0]!.image_file});`}
+            ></div>
+            {props.prevOrNext === "prev" ?
+                <KeyboardArrowLeft/> :
+                <KeyboardArrowRight/>
+            }
+
+            <div class="nextOrPrev-track-button__description">
+                {track() &&
+                    <>
+                        <FitText text={track()!.title.toString()} class="content-description__title"/>
+                        {track()!.bands!.map(
+                            band => <FitText text={band.title}
+                                             class="content-description__title"/>
+                        )}
+
+                    </>
+                }
+            </div>
+        </div>
+    )
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +150,7 @@ const formatTime = (seconds: number): string => {
 export const AudioPlayer: Component = () => {
     const updateTrack = () => {
         const nowPlaying = queueStore.audio.src;
-        const trackInQueue = queueStore.tracks.at(queueStore.nowPlaying)!.src
+        const trackInQueue = queueStore.tracks.at(queueStore.nowPlaying)!.music_file;
         if (nowPlaying != trackInQueue) {
             queueStore.audio.src = trackInQueue;
         }
@@ -80,6 +161,11 @@ export const AudioPlayer: Component = () => {
     const [duration, setDuration] = createSignal(0);
     const [currentTime, setCurrentTime] = createSignal(0);
     const [mouseDown, setMouseDown] = createSignal(false);
+
+
+    const [openPlayer, setOpenPlayer] = createSignal(false);
+    const handleOpenPlayer = () => setOpenPlayer(true);
+    const handleClosePlayer = () => setOpenPlayer(false);
 
     const togglePlayPause = () => {
         if (queueStore.playing) {
@@ -125,6 +211,9 @@ export const AudioPlayer: Component = () => {
         const progress = x / rect.width;
         audio().currentTime = progress * duration();
         setCurrentTime(progress * duration());
+        setQueueStore(
+            "audioTime", currentTime
+        )
     };
 
     const prevTrack = () => {
@@ -137,6 +226,20 @@ export const AudioPlayer: Component = () => {
         setQueueStore(
             "nowPlaying", queueStore.nowPlaying === queueStore.tracks.length - 1 ? 0 : queueStore.nowPlaying + 1
         );
+    };
+
+    const increaseVolume = () => {
+        setMusicVolume((currentVolume) => {
+            let newVolume = currentVolume + 0.1;
+            return newVolume > 1 ? 1 : newVolume;
+        });
+    };
+
+    const decreaseVolume = () => {
+        setMusicVolume((currentVolume) => {
+            let newVolume = currentVolume - 0.1;
+            return newVolume < 0 ? 0 : newVolume;
+        });
     };
 
     createEffect(() => {
@@ -163,21 +266,6 @@ export const AudioPlayer: Component = () => {
                     }
                     break;
             }
-        });
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.code === 'Space') {
-                event.preventDefault();
-                togglePlayPause();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-
-        return onCleanup(() => {
-            audio().pause();
-            document.removeEventListener('keydown', handleKeyDown);
-
         });
     });
 
@@ -216,6 +304,62 @@ export const AudioPlayer: Component = () => {
         });
     })
 
+    const handleProgress = () => {
+        if (preload) {
+            preload.style.width = preloadProgress();
+        }
+    };
+    onMount(() => {
+        queueStore.audio.addEventListener('progress', handleProgress);
+        onCleanup(() => {
+            queueStore.audio.removeEventListener('progress', handleProgress);
+        });
+    });
+
+
+    let preload: HTMLDivElement;
+    const preloadProgress = () => {
+        if (queueStore.audio.buffered.length > 0) {
+            const bufferedEnd = queueStore.audio.buffered.end(queueStore.audio.buffered.length - 1);
+            const duration = queueStore.audio.duration;
+
+            if (duration > 0) {
+                return `${(bufferedEnd / duration) * 100}%`;
+            }
+        }
+        return '0%';
+    };
+
+    createEffect(() => {
+        if (preload) {
+            preload.style.width = preloadProgress();
+        }
+    });
+
+
+    // Hotkeys
+    createShortcut(
+        [' '], togglePlayPause, {preventDefault: true,},
+    );
+
+    createShortcut(
+        ['ArrowLeft'], prevTrack, {preventDefault: true,},
+    );
+    createShortcut(
+        ['ArrowRight'], nextTrack, {preventDefault: true,},
+    );
+    createShortcut(
+        ['ArrowDown'], decreaseVolume, {preventDefault: true,},
+    );
+    createShortcut(
+        ['ArrowUp'], increaseVolume, {preventDefault: true,},
+    );
+    createShortcut(
+        ['Escape'], () => {
+            setOpenPlayer(false)
+        },
+        {preventDefault: true,},
+    );
 
     return (
         <div class={"audio-progress"}>
@@ -224,9 +368,68 @@ export const AudioPlayer: Component = () => {
                     <IconButton
                         title={"Open trackpage"}
                         size={"small"}
+                        onClick={handleOpenPlayer}
                     >
                         <OpenInNewOutlined/>
                     </IconButton>
+                    <Modal
+                        open={openPlayer()}
+                        onClose={handleClosePlayer}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box
+                            sx={{
+                                position: "fixed",
+                                top: "0",
+                                left: "0",
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "var(--stp-background)",
+                                border: "2px solid #000",
+                                boxShadow: "24px",
+                                p: 4,
+                                display: "flex"
+                            }}
+                        >
+
+                            <Stack
+                                direction="row"
+                                justifyContent="space-around"
+                                alignItems="center"
+                                spacing={1}
+                                flex={"1"}
+                                // height={"100%"}
+                                // width={"100%"}
+                            >
+                                <NextTrackInPlayer
+                                    prevOrNext={"prev"}
+                                    onClick={prevTrack}
+                                />
+
+                                <Visualizer/>
+
+                                <NextTrackInPlayer
+                                    prevOrNext={"next"}
+                                    onClick={nextTrack}
+                                />
+                            </Stack>
+
+                        </Box>
+
+                        <IconButton
+                            title={"Close"}
+                            size={"small"}
+                            onClick={handleClosePlayer}
+                            sx={{
+                                position: "fixed",
+                                top: "1rem",
+                                right: "1rem",
+                            }}
+                        >
+                            <Close/>
+                        </IconButton>
+                    </Modal>
                 </div>
                 <div class="row">
 
@@ -298,6 +501,10 @@ export const AudioPlayer: Component = () => {
                     class="audio-progress__progress-bar"
                 >
                     <div
+                        class="audio-progress__progress-preload"
+                        ref={preload}
+                    ></div>
+                    <div
                         class="audio-progress__progress-progress"
                         style={{
                             width: currentTime() > 0 ? `calc(${(currentTime() / duration()) * 100}% + 0.2rem)` : "0",
@@ -320,12 +527,42 @@ export const AudioPlayer: Component = () => {
 export const TrackInfo: Component = (props) => {
     return (
         <div class={"track-info"}>
-            <div class={queueStore.playing ? "track-info__image" : "track-info__image pause"}>
-                <img src={queueStore.tracks.at(queueStore.nowPlaying)!.image} alt={""}/>
-            </div>
+            <Link
+                href={`/player`}
+                classList={{
+                    "track-info__image": true,
+                    "pause": !queueStore.playing,
+                }}
+            >
+                <img src={queueStore.tracks.at(queueStore.nowPlaying)!.images[0].image_file} alt={""}/>
+            </Link>
             <div class="track-info__text">
-                <h3 title={queueStore.tracks.at(queueStore.nowPlaying)!.track}>{queueStore.tracks.at(queueStore.nowPlaying)!.track}</h3>
-                <p title={queueStore.tracks.at(queueStore.nowPlaying)!.group}>{queueStore.tracks.at(queueStore.nowPlaying)!.group}</p>
+                <div class="row start marquee">
+
+                    <Link
+                        class={"track-info__text-track "}
+                        title={queueStore.tracks.at(queueStore.nowPlaying)!.title}
+                        href={`/track/${queueStore.tracks.at(queueStore.nowPlaying)!.uuid}`}>
+                        {queueStore.tracks.at(queueStore.nowPlaying)!.title}
+                    </Link>
+                </div>
+                <div class="row start track-info__text-authors marquee">
+                        <span>
+                            {queueStore.tracks.at(queueStore.nowPlaying)!
+                                .bands.map((band, index, bandsArray) => (
+                                    <Link
+                                        title={band.title}
+                                        href={`/band/${band.id}`}
+                                    >
+                                        {band.title}{index < bandsArray.length - 1 ? ', ' : ''}
+
+                                    </Link>
+                                ))}
+                        </span>
+                </div>
+
+                {/*<h3 title={queueStore.tracks.at(queueStore.nowPlaying)!.title}>{queueStore.tracks.at(queueStore.nowPlaying)!.title}</h3>*/}
+                {/*<p title={queueStore.tracks.at(queueStore.nowPlaying)!.bands.map(band => band.title)}>{queueStore.tracks.at(queueStore.nowPlaying)!.bands.map(band => band.title)}</p>*/}
             </div>
         </div>
     );
@@ -377,32 +614,34 @@ const FooterQueue: Component = () => {
                 }}
             >
 
-                <MenuItem sx={{height: "3rem", padding: "0"}}>
-                    <Toolbar sx={{width: "100%", height: "2rem"}}>
+                <Toolbar class={"player-queue"}>
+                    <Link href={"/queue"} class={"player-queue__title"}>`
                         <Typography variant="body1" component="div" class={"row start"}
                                     sx={{flexGrow: 1, fontSize: "1.2rem", gap: "1rem"}}>
                             <PlaylistPlay sx={{fontSize: "2.5rem"}}/>
                             Queue
-                        </Typography>
+                        </Typography>`
 
+                    </Link>
 
-                        <IconButton
-                            title={"Play/Stop"}
-                            onClick={() => {
-                                setQueueStore(
-                                    "playing", !queueStore.playing
-                                )
-                            }}
-                            size={"small"}
-                        >
-                            {queueStore.playing ?
-                                <PauseOutlined sx={{fontSize: "2rem"}}/> :
-                                <PlayArrowOutlined sx={{fontSize: "2rem"}}/>
-                            }
+                    <IconButton
+                        title={"Play/Stop"}
+                        onClick={(event) => {
+                            setQueueStore(
+                                "playing", !queueStore.playing
+                            );
+                            event.preventDefault();
+                        }}
+                        size={"small"}
+                    >
+                        {queueStore.playing ?
+                            <PauseOutlined sx={{fontSize: "2rem"}}/> :
+                            <PlayArrowOutlined sx={{fontSize: "2rem"}}/>
+                        }
 
-                        </IconButton>
-                    </Toolbar>
-                </MenuItem>
+                    </IconButton>
+
+                </Toolbar>
                 <Divider/>
                 {/*{queueStore.tracks.map((track) => (*/}
                 {/*    <QueueTrack {...track}/>*/}
@@ -500,10 +739,10 @@ export const RightButtonsControls: Component = (props) => {
             <IconButton
                 title="Add to favorite"
                 onClick={() => {
-                    editTrackById(queueStore.nowPlaying, {isFavorite: !queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite})
+                    // editTrackById(queueStore.nowPlaying, {isFavorite: !queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite})
                 }}
             >
-                {queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite ?
+                {true ? // queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite ?
                     <Favorite sx={{fontSize: "2.5rem"}}/> :
                     <FavoriteBorderOutlined sx={{fontSize: "2.5rem"}}/>
                 }

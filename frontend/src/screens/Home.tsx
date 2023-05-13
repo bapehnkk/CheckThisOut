@@ -8,7 +8,7 @@ import {Footer} from "../components/Footer";
 
 
 import {onCleanup} from 'solid-js';
-import {useAudioPlayerStore, setAudioSrc} from '../context/AudioPlayerContext';
+import {useAudioPlayerStore, setAudioSrc} from '../store/AudioPlayer';
 
 
 const HomeScreen: Component = () => {

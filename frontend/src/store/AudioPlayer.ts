@@ -101,7 +101,7 @@ export interface QueueOptions {
 
 
 const [queueStore, setQueueStore] = createStore<QueueOptions>({
-    nowPlaying: 0,
+    nowPlaying: 1,
     musicVolume: 0.7,
     playing: false,
     repeat: "no",

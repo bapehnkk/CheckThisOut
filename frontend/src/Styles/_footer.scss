@@ -133,26 +133,6 @@ footer {
             }
         }
 
-        .right-buttons-controls {
-            position: relative;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-            align-items: center;
-            width: 25%;
-
-            gap: .5rem;
-
-            .value-input {
-                display: none;
-            }
-
-            .VolumeControlIcon {
-                path {
-                    transform: scale(.4);
-                }
-            }
-        }
 
         @media (max-width: 1200px) {
             .track-info {
@@ -171,5 +151,4 @@ footer {
     }
 
 }
-
 

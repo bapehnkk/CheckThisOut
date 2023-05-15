@@ -71,6 +71,7 @@ import {
     createShortcut, useKeyDownEvent,
 } from '@solid-primitives/keyboard'
 import {FitText} from "./FitText";
+import TabsDotted from "./Tabs";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,7 +365,7 @@ export const AudioPlayer: Component = () => {
     return (
         <div class={"audio-progress"}>
             <div class="audio-progress__controls-btns">
-                <div class="row">
+                <div class="row start">
                     <IconButton
                         title={"Open trackpage"}
                         size={"small"}
@@ -386,7 +387,6 @@ export const AudioPlayer: Component = () => {
                                 width: "100%",
                                 height: "100%",
                                 backgroundColor: "var(--stp-background)",
-                                border: "2px solid #000",
                                 boxShadow: "24px",
                                 p: 4,
                                 display: "flex"
@@ -407,8 +407,133 @@ export const AudioPlayer: Component = () => {
                                     onClick={prevTrack}
                                 />
 
-                                <Visualizer/>
+                                <div class="full-page-player">
 
+                                    <div
+                                        class={"full-page-player__bgc"}
+                                        style={`background: linear-gradient(0deg, rgba(59, 66, 82, 0.9), rgba(59, 66, 82, 0.9)), url(${queueStore.tracks!.at(queueStore.nowPlaying)!.images[0]!.image_file});`}
+                                    ></div>
+
+                                    <div class={"full-page-player__content"}>
+                                        <TabsDotted
+                                            tabs={[
+                                                <Visualizer/>,
+                                                // <div>aa</div>,
+                                                <div>dd</div>,
+                                            ]}
+                                        />
+
+                                        <div class="audio-progress__controls-btns">
+                                            <div class="row start">
+                                                <IconButton
+                                                    title={"More"}
+                                                    size={"small"}
+                                                >
+                                                    <MoreHoriz/>
+                                                </IconButton>
+                                            </div>
+                                            <div class="row">
+                                                <IconButton
+                                                    title={"Mix"}
+                                                    size={"small"}
+                                                    onClick={shuffleTracks}
+                                                >
+                                                    <ShuffleOutlined/>
+                                                </IconButton>
+                                                <IconButton
+                                                    title={"SkipPreviousOutlined"}
+                                                    size={"small"}
+                                                    onClick={prevTrack}
+                                                >
+                                                    <SkipPreviousOutlined/>
+                                                </IconButton>
+                                                <IconButton
+                                                    title={"Play/Stop"}
+                                                    onClick={togglePlayPause}
+                                                    size={"small"}
+                                                >
+
+                                                    {queueStore.playing ?
+                                                        <PauseCircleOutline fontSize={"large"}/> :
+                                                        <PlayCircleOutline fontSize={"large"}/>
+                                                    }
+                                                </IconButton>
+                                                <IconButton
+                                                    title={"Play next"}
+                                                    size={"small"}
+                                                    onClick={nextTrack}
+                                                >
+                                                    <SkipNextOutlined/>
+                                                </IconButton>
+                                                <IconButton
+                                                    title={"Repeat"}
+                                                    size={"small"}
+                                                    onClick={toggleRepeatType}
+                                                >
+                                                    {queueStore.repeat === "track" ? <RepeatOneOutlined/> :
+                                                        queueStore.repeat === "queue" ? <RepeatOutlined/> :
+                                                            <RepeatOutlined
+                                                                sx={{color: "var(--stp-foreground-dark-alpha_secondary)"}}/>
+                                                    }
+
+                                                </IconButton>
+                                            </div>
+                                            <div class="row end">
+
+                                                <FooterQueue fontSize={"medium"}/>
+                                                <IconButton
+                                                    title="Add to favorite"
+                                                    onClick={() => {
+                                                        // editTrackById(queueStore.nowPlaying, {isFavorite: !queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite})
+                                                    }}
+                                                >
+                                                    {true ? // queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite ?
+                                                        <Favorite sx={{fontSize: "2rem"}}/> :
+                                                        <FavoriteBorderOutlined sx={{fontSize: "2rem"}}/>
+                                                    }
+                                                </IconButton>
+                                                <SVGVolumeKnob
+                                                    defaultValue={musicVolume()}
+                                                    range={rangeCreators.createAccuratePercentageRange()}
+                                                    smoothed={true}
+                                                    fontSize={"medium"}
+                                                />
+
+                                            </div>
+
+
+                                        </div>
+                                        <div class="audio-progress__progress">
+                                            <span
+                                                class="audio-progress__progress-time"
+                                            >{formatTime(currentTime())}</span>
+                                            <div
+                                                onMouseDown={handleMouseDown}
+                                                onMouseUp={handleMouseUp}
+                                                onMouseMove={handleMouseMove}
+                                                onMouseLeave={handleMouseLeave}
+                                                onClick={handleProgressBarClick}
+                                                class="audio-progress__progress-bar"
+                                            >
+                                                <div
+                                                    class="audio-progress__progress-preload"
+                                                    ref={preload}
+                                                ></div>
+                                                <div
+                                                    class="audio-progress__progress-progress"
+                                                    style={{
+                                                        width: currentTime() > 0 ? `calc(${(currentTime() / duration()) * 100}% + 0.2rem)` : "0",
+                                                    }}
+                                                />
+                                            </div>
+
+                                            <span
+                                                class="audio-progress__progress-time"
+                                            >{formatTime(duration())}</span>
+                                        </div>
+                                    </div>
+
+                                </div>
                                 <NextTrackInPlayer
                                     prevOrNext={"next"}
                                     onClick={nextTrack}
@@ -477,7 +602,7 @@ export const AudioPlayer: Component = () => {
 
                     </IconButton>
                 </div>
-                <div class="row">
+                <div class="row end">
                     <IconButton
                         title={"More"}
                         size={"small"}
@@ -570,7 +695,11 @@ export const TrackInfo: Component = (props) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const FooterQueue: Component = () => {
+interface FooterQueueOptions {
+    fontSize?: "medium" | "large"
+}
+
+const FooterQueue: Component<FooterQueueOptions> = (props) => {
     const [anchorEl, setAnchorEl] = createSignal<null | HTMLElement>(null);
     const open = () => Boolean(anchorEl());
     const handleClose = () => setAnchorEl(null);
@@ -588,7 +717,7 @@ const FooterQueue: Component = () => {
                 aria-haspopup="true"
                 aria-expanded={open() ? "true" : undefined}
             >
-                <PlaylistPlay sx={{fontSize: "2.5rem"}}/>
+                <PlaylistPlay sx={{fontSize: props.fontSize === "medium" ? "2rem" : "2.5rem"}}/>
             </IconButton>
             <Menu
                 anchorEl={anchorEl()}
@@ -658,6 +787,7 @@ interface SVGVolumeKnobProps {
     range: Range;
     defaultValue: number;
     smoothed?: boolean;
+    fontSize?: "medium" | "large";
 }
 
 export const VolumeIcon: Component = (props) => {
@@ -700,7 +830,8 @@ function SVGVolumeKnob(props: SVGVolumeKnobProps) {
                 onGestureStart={() => console.log('Started change gesture.')}
                 onGestureEnd={() => console.log('Ended change gesture.')}
                 onChange={setMusicVolume}>
-                <svg style="width: 4rem; position: releative;" viewBox="0 0 100 100">
+                <svg style={`width: ${props.fontSize === "medium" ? "3rem" : "4rem"}; position: releative;`}
+                     viewBox="0 0 100 100">
                     <circle cx={50} cy={50} r={28} fill="var(--stp-background-lighter)"/>
                     <VolumeIcon/>
                     <Arc
@@ -730,12 +861,15 @@ function SVGVolumeKnob(props: SVGVolumeKnobProps) {
     );
 }
 
+interface RightButtonsControlsOptions {
+    fontSize?: "medium" | "large"
+}
 
-export const RightButtonsControls: Component = (props) => {
+export const RightButtonsControls: Component<RightButtonsControlsOptions> = (props) => {
 
     return (
         <div class={"right-buttons-controls"}>
-            <FooterQueue/>
+            <FooterQueue fontSize={props.fontSize}/>
             <IconButton
                 title="Add to favorite"
                 onClick={() => {
@@ -743,14 +877,15 @@ export const RightButtonsControls: Component = (props) => {
                 }}
             >
                 {true ? // queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite ?
-                    <Favorite sx={{fontSize: "2.5rem"}}/> :
-                    <FavoriteBorderOutlined sx={{fontSize: "2.5rem"}}/>
+                    <Favorite sx={{fontSize: props.fontSize === "medium" ? "2rem" : "2.5rem"}}/> :
+                    <FavoriteBorderOutlined sx={{fontSize: props.fontSize === "medium" ? "2rem" : "2.5rem"}}/>
                 }
             </IconButton>
             <SVGVolumeKnob
                 defaultValue={musicVolume()}
                 range={rangeCreators.createAccuratePercentageRange()}
                 smoothed={true}
+                fontSize={props.fontSize}
             />
         </div>
     );

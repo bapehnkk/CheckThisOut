@@ -31,22 +31,6 @@ class RegisterView(generics.CreateAPIView):
             return Response(data=response.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-
-        if user:
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            return Response({"access_token": access_token})
-        else:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 @csrf_exempt
 def validate_user_field(request):
     if request.method == 'POST':

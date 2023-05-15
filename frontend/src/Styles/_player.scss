@@ -2,7 +2,6 @@
     width: 50%;
     position: relative;
     background-color: var(--stp-background-light);
-    padding: 0 1rem;
 
     @media (max-width: 1200px) {
         flex-grow: 1;
@@ -13,6 +12,7 @@
     }
 
     &__progress {
+        width: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -59,11 +59,15 @@
     }
 
     &__controls-btns {
+        width: 100%;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         transform: translateY(-0.2rem);
+        .row {
+            width: calc(100% / 3);
+        }
     }
 }
 
@@ -83,8 +87,24 @@
 
 }
 
-.full-page-player {
+.right-buttons-controls {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 25%;
+    gap: .5rem;
+}
 
+.value-input {
+    display: none;
+}
+
+.VolumeControlIcon {
+    path {
+        transform: scale(.4);
+    }
 }
 
 .nextOrPrev-track-button {
@@ -97,7 +117,7 @@
     cursor: pointer;
     position: relative;
     transition: all .3s ease;
-        user-select: none;
+    user-select: none;
 
     &__bgc {
         position: absolute;
@@ -132,13 +152,14 @@
         opacity: 0;
     }
 
+
     &:hover {
         svg {
             fill: rgba(236, 239, 244, 0);
         }
 
         .nextOrPrev-track-button__bgc {
-            filter: blur(0);
+            //filter: blur(0);
         }
 
         .nextOrPrev-track-button__description {
@@ -154,3 +175,75 @@
         display: none;
     }
 }
+
+
+.full-page-player {
+    width: 50%;
+    height: 100%;
+    background-color: transparent;
+    position: relative;
+    transition: all .3s ease;
+    user-select: none;
+    padding: 1rem;
+
+    &__content, &__bgc {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__bgc {
+        background-size: cover !important;
+        background-position: center !important;
+        border-radius: 1rem;
+        filter: blur(1px);
+        transition: all .3s ease;
+    }
+
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: .1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 1rem;
+    }
+
+
+    @media (max-width: 768px) {
+        width: 95%;
+        padding: .5rem;
+    }
+    @media (max-width: 600px) {
+        width: 100%;
+        padding: .1rem;
+        .full-page-player__bgc {
+            display: none;
+        }
+    }
+}
+
+
+.visualizer {
+    height: 60vh;
+    max-width: 25rem;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+
+    #out {
+        height: 100%;
+        max-width: 25rem;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+}
+

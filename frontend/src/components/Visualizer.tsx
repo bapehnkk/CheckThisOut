@@ -109,6 +109,7 @@ export const Visualizer: Component = () => {
 
 
     const play = async () => {
+        out.innerHTML = '';
         let bufferLength = analyser.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
         let group = new THREE.Group();

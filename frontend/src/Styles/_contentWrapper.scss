@@ -1,0 +1,139 @@
+.content-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    padding: 1rem;
+    gap: 1rem;
+    padding-bottom: 6rem;
+
+    .album {
+        margin: 0;
+    }
+
+    &__content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__music-queue {
+        width: max-content;
+        top: 4rem;
+        position: sticky;
+        height: 100%;
+    }
+
+
+    &__content-block {
+        background-color: var(--stp-background-light);
+        padding: .7rem;
+        border-radius: .5rem;
+        width: 100%;
+
+        &.info-panel {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        &.text {
+            column-count: 2;
+            column-gap: 1rem;
+
+
+            .block {
+                display: inline-block;
+                width: 100%;
+
+
+                p {
+                    font-style: italic;
+                    font-weight: 400;
+                    font-size: 1.15rem;
+                    line-height: 163.52%;
+                    /* or 39px */
+
+                    letter-spacing: -0.075em;
+                }
+            }
+        }
+
+        &.interactive {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+
+
+        }
+    }
+}
+
+.image-slider {
+    position: relative;
+    overflow: hidden;
+    height: 65vh;
+    width: 95%;
+    max-width: 60vw;
+    margin: auto;
+
+
+    swiper-container {
+        width: 100%;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-size: cover;
+        background-position: center;
+        background-color: transparent;
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        object-fit: contain;
+        }
+    }
+
+    .mySwiper {
+        height: 80%;
+        width: 100%;
+    }
+
+    .mySwiper2 {
+        height: 20%;
+        box-sizing: border-box;
+        padding: 10px 0;
+
+        swiper-slide {
+            width: 25%;
+            height: 100%;
+            opacity: 0.4;
+        }
+
+        .swiper-slide-thumb-active {
+            opacity: 1;
+        }
+
+        swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}

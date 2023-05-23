@@ -7,6 +7,7 @@ import {useQueueStore} from "../store/AudioPlayer";
 
 // @ts-ignore
 import glslify from 'glslify';
+import {Avatar} from "@suid/material";
 
 
 function avg(arr: Uint8Array): number {
@@ -51,6 +52,7 @@ function createBall(
 }
 
 export const Visualizer: Component = () => {
+    const [outUUID, setOutUUID] = createSignal(`out-${generateUUID()}`);
     const seed = "seed";
     const noise2D = createNoise2D(alea(seed));
     const noise3D = createNoise3D(alea(seed));
@@ -72,7 +74,7 @@ export const Visualizer: Component = () => {
         0xBF616A, // Цвет Nord dark 5
         0xECEFF4, // Цвет Nord dark 6
     ];
-    const scaleMultiplier = window.innerWidth < 370 ? 1.7 : window.innerWidth < 400 ? 2 : 2.3;
+    const scaleMultiplier = window.innerWidth < 370 ? 1.7 : window.innerWidth < 400 ? 2 : 2.4;
 
 
     let analyser: AnalyserNode;
@@ -86,6 +88,7 @@ export const Visualizer: Component = () => {
     const topScene = new THREE.Scene();
     let renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     renderer.autoClear = false;
+    let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 
     async function setupAudioContext(context: AudioContext) {
@@ -109,12 +112,12 @@ export const Visualizer: Component = () => {
 
 
     const play = async () => {
-        out.innerHTML = '';
+        if (!out)
+            return;
         let bufferLength = analyser.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
         let group = new THREE.Group();
         let dvd = new THREE.Group();
-        let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         let outRect = out.getBoundingClientRect();
 
         camera.aspect = outRect.width / outRect.height;
@@ -182,7 +185,7 @@ export const Visualizer: Component = () => {
                     dvd.remove(dvd.children[0]);
                 }
                 const mesh = new THREE.Mesh(geometry, material);
-                mesh.scale.multiplyScalar(scaleMultiplier);
+                mesh.scale.multiplyScalar(scaleMultiplier * 1.25);
                 dvd.add(mesh);
             });
         });
@@ -216,10 +219,8 @@ export const Visualizer: Component = () => {
 
         out.appendChild(renderer.domElement);
 
-
         onWindowResize();
         window.addEventListener('resize', onWindowResize, false);
-
 
         function render() {
             analyser.getByteFrequencyData(dataArray);
@@ -283,13 +284,6 @@ export const Visualizer: Component = () => {
 
         render();
 
-        function onWindowResize() {
-            outRect = out.getBoundingClientRect();
-            camera.aspect = outRect.width / outRect.height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(outRect.width, outRect.height);
-        }
-
 
         function makeRoughBall(mesh: THREE.Mesh, bassFr: number, treFr: number) {
             const positionAttribute = mesh.geometry.getAttribute("position");
@@ -342,9 +336,24 @@ export const Visualizer: Component = () => {
         }, 5000);
     }
 
+    function generateUUID(): string {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function onWindowResize() {
+        const w = window.innerWidth / 3;
+        const h = window.innerHeight / 2;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    }
 
     onMount(async () => {
-        out = document.getElementById("out") as HTMLElement;
+        out = document.getElementById(outUUID()) as HTMLElement;
 
         await setupAudioContext(audioContext);
 
@@ -425,8 +434,8 @@ export const Visualizer: Component = () => {
 
 
     return (
-        <div class={"visualizer"}>
-            <div id="out"></div>
+        <div class="visualizer">
+            <div id={outUUID()}></div>
         </div>
     );
 }

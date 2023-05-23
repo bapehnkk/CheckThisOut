@@ -11,6 +11,7 @@ const LoginScreen = lazy(() => import("../screens/Login"));
 const RegisterScreen = lazy(() => import("../screens/Register"));
 const UserList = lazy(() => import("../Components/UserList"));
 const TrackList = lazy(() => import("../Components/TrackList"));
+const NotFound = lazy(() => import("../screens/NotFound"));
 
 const AppRoutes: Component = (props) => {
     const [authState, _] = useAuthStore();
@@ -59,6 +60,12 @@ const AppRoutes: Component = (props) => {
                 </>
             }
 
+            <Route
+                path="*"
+                component={
+                    NotFound
+                }
+            />
         </Routes>
     )
 }

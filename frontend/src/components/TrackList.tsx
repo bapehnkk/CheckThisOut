@@ -9,7 +9,7 @@ export const TrackList = () => {
     const fetchTracks = async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/tracks/');
-            setTracks(response.data);
+            setTracks(response.data.results);
         } catch (error) {
             console.error('Error fetching tracks:', error);
         }

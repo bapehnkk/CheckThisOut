@@ -102,32 +102,29 @@
 .content-btn {
     display: flex;
     justify-content: center;
-    transform: translateY(10%);
     flex-direction: column;
     align-items: center;
-    flex-grow: 1;
     cursor: pointer;
+    background: linear-gradient(123.46deg, rgba(191, 97, 106, 0) 4.04%, #BF616A 158.41%), #3B4252;
+    border-radius: 50%;
+    padding: .3rem;
+    transition: all .6s ease;
+    animation: gradient-animation 10s infinite linear;
+    background-size: 200% 200%;
+    box-sizing: border-box;
 
-    svg {
-        background: linear-gradient(123.46deg, rgba(191, 97, 106, 0) 4.04%, #BF616A 158.41%), #3B4252;
-        border-radius: 50%;
-        box-sizing: content-box;
-        padding: .3rem;
-        font-size: 3rem !important;
-        transition: all .6s ease;
-        animation: gradient-animation 10s infinite linear;
-        background-size: 200% 200%;
+    width: max-content;
+    height: max-content;
+    margin: auto;
 
-        &:hover {
-            transform: scale(1.05);
-        }
+    &:hover {
+        transform: scale(1.05);
     }
 
-    &:active {
 
-        .content-btn svg {
-            transform: scale(1) !important;
-        }
+    &:active {
+        transform: scale(1) !important;
+
     }
 }
 

@@ -84,3 +84,39 @@ export const LinksSlider: Component<LinksSliderOptions> = (props) => {
         </>
     );
 }
+
+
+
+interface ImageSliderOptions {
+    images: string[];
+}
+
+export const ImageSlider: Component<ImageSliderOptions> = (props) => {
+
+    return (
+        <div  class={"image-slider"} >
+            <swiper-container style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="mySwiper"
+                              thumbs-swiper=".mySwiper2" space-between="10" navigation="true">
+                <For each={props.images}>
+                    {(image, i) =>
+                        <swiper-slide>
+                            <img src={image}/>
+                        </swiper-slide>
+                    }
+                </For>
+            </swiper-container>
+
+
+            <swiper-container class="mySwiper2" space-between="10" slides-per-view="4" free-mode="true"
+                              watch-slides-progress="true">
+                <For each={props.images}>
+                    {(image, i) =>
+                        <swiper-slide>
+                            <img src={image}/>
+                        </swiper-slide>
+                    }
+                </For>
+            </swiper-container>
+        </div>
+    );
+}

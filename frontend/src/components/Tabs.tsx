@@ -36,17 +36,13 @@ export const TabsDotted: Component<TabsDottedOptions> = (props) => {
     const onProgress = (e) => {
         const [swiper, progress] = e.detail;
         setTabOpen(Math.round(progress))
-        console.log(progress)
+        // console.log(progress)
     };
 
     const setSlide = () => {
 
         const swiper = swiperEl.swiper;
         swiper.slideTo(tabOpen(), 500, false);
-
-        // swiper.slideTo(2, 0);
-        console.log("this")
-
     };
 
     onMount(() => {
@@ -55,12 +51,14 @@ export const TabsDotted: Component<TabsDottedOptions> = (props) => {
         Object.assign(swiperEl, {
             slidesPerView: 1,
             virtual: {
-
                 slides: (() => props.tabs)(),
             },
         });
-
-        swiperEl.initialize();
+        if (swiperEl.initialize) {
+            swiperEl.initialize();
+        } else {
+            console.error('swiperEl.initialize is not a function');
+        }
     })
 
     return (

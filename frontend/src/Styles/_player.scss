@@ -65,6 +65,7 @@
         justify-content: space-between;
         align-items: center;
         transform: translateY(-0.2rem);
+
         .row {
             width: calc(100% / 3);
         }
@@ -214,7 +215,6 @@
         padding-bottom: 1rem;
     }
 
-
     @media (max-width: 768px) {
         width: 95%;
         padding: .5rem;
@@ -230,20 +230,8 @@
 
 
 .visualizer {
-    height: 60vh;
-    max-width: 25rem;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
 
-    #out {
-        height: 100%;
-        max-width: 25rem;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+    div[id^='out-'] {}
 
 }
 

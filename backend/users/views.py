@@ -12,6 +12,14 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .token import account_activation_token
+from django.core.mail import EmailMessage
+from .tasks import delete_user_if_not_in_group
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -22,13 +30,44 @@ class RegisterView(generics.CreateAPIView):
         response = super().create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
             user = User.objects.get(email=request.data['email'])
+            user.is_active = False
+            user.save()
             refresh = RefreshToken.for_user(user)
+            delete_user_if_not_in_group.apply_async(args=[user.id], countdown=30)
+
+            # to get the domain of the current site
+            current_site = get_current_site(request)
+            mail_subject = 'Activation link has been sent to your email id'
+            message = render_to_string('acc_active_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            email = EmailMessage(
+                mail_subject, message, to=[request.data['email']]
+            )
+            email.send()
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
         else:
             return Response(data=response.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return Response(data='Thank you for your email confirmation. Now you can login your account.')
+    else:
+        return Response(data='Activation link is invalid!', status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt

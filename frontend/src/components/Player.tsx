@@ -72,6 +72,9 @@ import {
 } from '@solid-primitives/keyboard'
 import {FitText} from "./FitText";
 import TabsDotted from "./Tabs";
+import {FavoriteButton} from "./Buttons";
+import TextWrap from "./TextWrap";
+import ScrollContainer from "./ScrollContainer";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,26 +343,42 @@ export const AudioPlayer: Component = () => {
 
     // Hotkeys
     createShortcut(
-        [' '], togglePlayPause, {preventDefault: true,},
+        [' '], togglePlayPause, {preventDefault: false,},
     );
 
     createShortcut(
-        ['ArrowLeft'], prevTrack, {preventDefault: true,},
+        ['ArrowLeft'],
+        () => {
+
+            audio().currentTime = audio().currentTime - 5;
+        },
+        {preventDefault: false,},
     );
     createShortcut(
-        ['ArrowRight'], nextTrack, {preventDefault: true,},
+        ['ArrowRight'],
+        () => {
+
+            audio().currentTime = audio().currentTime + 5;
+        },
+        {preventDefault: false,},
     );
     createShortcut(
-        ['ArrowDown'], decreaseVolume, {preventDefault: true,},
+        ['control', 'ArrowLeft'], prevTrack, {preventDefault: false,},
     );
     createShortcut(
-        ['ArrowUp'], increaseVolume, {preventDefault: true,},
+        ['control', 'ArrowRight'], nextTrack, {preventDefault: false,},
+    );
+    createShortcut(
+        ['ArrowDown'], decreaseVolume, {preventDefault: false,},
+    );
+    createShortcut(
+        ['ArrowUp'], increaseVolume, {preventDefault: false,},
     );
     createShortcut(
         ['Escape'], () => {
             setOpenPlayer(false)
         },
-        {preventDefault: true,},
+        {preventDefault: false,},
     );
 
     return (
@@ -418,8 +437,14 @@ export const AudioPlayer: Component = () => {
                                         <TabsDotted
                                             tabs={[
                                                 <Visualizer/>,
-                                                // <div>aa</div>,
-                                                <div>dd</div>,
+                                                <ScrollContainer>
+                                                    <Typography variant="h4">
+                                                        Lyrics
+                                                    </Typography>
+                                                    <TextWrap
+                                                        text={queueStore.tracks!.at(queueStore.nowPlaying)!.lyrics}
+                                                    />
+                                                </ScrollContainer>,
                                             ]}
                                         />
 
@@ -744,12 +769,12 @@ const FooterQueue: Component<FooterQueueOptions> = (props) => {
             >
 
                 <Toolbar class={"player-queue"}>
-                    <Link href={"/queue"} class={"player-queue__title"}>`
+                    <Link href={"/queue"} class={"player-queue__title"}>
                         <Typography variant="body1" component="div" class={"row start"}
                                     sx={{flexGrow: 1, fontSize: "1.2rem", gap: "1rem"}}>
                             <PlaylistPlay sx={{fontSize: "2.5rem"}}/>
                             Queue
-                        </Typography>`
+                        </Typography>
 
                     </Link>
 
@@ -870,17 +895,7 @@ export const RightButtonsControls: Component<RightButtonsControlsOptions> = (pro
     return (
         <div class={"right-buttons-controls"}>
             <FooterQueue fontSize={props.fontSize}/>
-            <IconButton
-                title="Add to favorite"
-                onClick={() => {
-                    // editTrackById(queueStore.nowPlaying, {isFavorite: !queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite})
-                }}
-            >
-                {true ? // queueStore.tracks.at(queueStore.nowPlaying)!.isFavorite ?
-                    <Favorite sx={{fontSize: props.fontSize === "medium" ? "2rem" : "2.5rem"}}/> :
-                    <FavoriteBorderOutlined sx={{fontSize: props.fontSize === "medium" ? "2rem" : "2.5rem"}}/>
-                }
-            </IconButton>
+            <FavoriteButton fontSize={props.fontSize} trackUUID={queueStore.tracks.at(queueStore.nowPlaying)!.uuid}/>
             <SVGVolumeKnob
                 defaultValue={musicVolume()}
                 range={rangeCreators.createAccuratePercentageRange()}

@@ -51,7 +51,7 @@ const SlideChildren: Component<CardOptions> = (props) => {
             <img src={props.image} loading="lazy"/>
 
             <Link href={props.url} class="content" onclick={addTrack}>
-                <RedButton/>
+                <RedButton fontSize={"3rem"} />
 
                 <div class="content-description">
                     <FitText text={props.title} class="content-description__title"/>

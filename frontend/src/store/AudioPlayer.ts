@@ -18,76 +18,75 @@ export function setAudioSrc(src: string | null) {
     setAudioPlayerStore('audioSrc', src);
 }
 
+export interface UserOptions {
+    id: number;
+    email: string;
+    username: string;
+    full_name: string;
+    phone: string;
+    image: string | null;
+    language: string;
+}
+
+
+
+export interface ImageOptions {
+    id: number;
+    title: string;
+    image_file: string;
+    image_type: "art" | "logo";
+    user: number;
+}
+
+export interface BandOptions {
+    id: number;
+    title: string;
+    description: string;
+    musicians: number[];
+    images: ImageOptions[];
+}
+
+export interface AlbumOptions {
+    id: number;
+    album_type: string;
+    title: string;
+    description: string;
+    critical_receptions: string;
+    record_label: string;
+    liner_notes: string;
+    release_date: string;
+    update_date: string;
+    tracks: string[];
+    credentials: any[];
+    comments: any[];
+    images: ImageOptions[];
+}
+
+interface ClipOptions {
+    clip_url: string | null;
+    clip_file: string | null;
+}
+
 export interface QueueTrackOptions {
     id: number;
     uuid: string;
     title: string;
     description: string;
+    lyrics: string;
     music_file: string;
     liner_notes: string;
     release_date: string;
     update_date: string;
-    user: {
-        id: number;
-        email: string;
-        username: string;
-        full_name: string;
-        phone: string;
-        image: string | null;
-        language: string;
-    };
-    album: {
-        id: number;
-        album_type: string;
-        title: string;
-        description: string;
-        critical_receptions: string;
-        record_label: string;
-        liner_notes: string;
-        release_date: string;
-        update_date: string;
-        tracks: string[];
-        credentials: any[];
-        comments: any[];
-    };
-    tags: {
-        id: number;
-        title: string;
-        user: number;
-    }[];
-    musicians: {
-        id: number;
-        email: string;
-        username: string;
-        full_name: string;
-        phone: string;
-        image: string | null;
-        language: string;
-    }[];
-    bands: {
-        id: number;
-        title: string;
-        description: string;
-        musicians: number[];
-        images: number[];
-    }[];
-    images: {
-        id: number;
-        title: string;
-        image_file: string;
-        user: number;
-    }[];
+    user: UserOptions;
+    album: AlbumOptions;
+    tags: string[];
+    musicians: UserOptions[];
+    bands: BandOptions[];
+    images: ImageOptions[];
+    clips: ClipOptions[];
     comments: any[];
 }
 
-// export interface QueueTrackOptions {
-//     id: number,
-//     track: string,
-//     group: string,
-//     image: string,
-//     src: string,
-//     isFavorite: boolean
-// }
 
 export interface QueueOptions {
     nowPlaying: number,
@@ -101,7 +100,7 @@ export interface QueueOptions {
 
 
 const [queueStore, setQueueStore] = createStore<QueueOptions>({
-    nowPlaying: 1,
+    nowPlaying: -1,
     musicVolume: 0.7,
     playing: false,
     repeat: "no",
@@ -112,7 +111,8 @@ const [queueStore, setQueueStore] = createStore<QueueOptions>({
 const fetchTracks = async () => {
     try {
         const response = await axios.get('http://localhost:8000/api/tracks/');
-        setQueueStore("tracks", response.data)
+        console.log(response.data)
+        setQueueStore("tracks", response.data.results)
     } catch (error) {
         console.error('Error fetching tracks:', error);
     }
